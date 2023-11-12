@@ -1,3 +1,5 @@
+import os.path
+
 import torch
 from torch import nn
 from torch.optim import SGD
@@ -20,7 +22,7 @@ optimizer = SGD(model.parameters(), lr=1e-3, momentum=0.9)
 
 best_accuracy = 0.0
 
-num_epochs = 10
+num_epochs = 300
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0.0
@@ -48,8 +50,13 @@ for epoch in range(num_epochs):
     epoch_accuracy = 100 * correct / total
     print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {total_loss / (batch_idx + 1)}, Accuracy: {epoch_accuracy}%")
 
+    if not os.path.exists("checkpoints"):
+        os.mkdir("checkpoints")
+
+    torch.save(model.state_dict(), "checkpoints/last.pt")
+
     if epoch_accuracy > best_accuracy:
         best_accuracy = epoch_accuracy
-        torch.save(model.state_dict(), "./best_siamese_vgg16_model.pth")
+        torch.save(model.state_dict(), "checkpoints/best.pt")
 
-torch.save(model.state_dict(), "./last_siamese_vgg16_model.pth")
+
